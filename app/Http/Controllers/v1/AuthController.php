@@ -4,6 +4,7 @@ namespace App\Http\Controllers\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\UserResource;
+use App\Mail\TemporaryPasswordMail;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -107,11 +108,7 @@ class AuthController extends Controller
             $user->password = Hash::make($temporaryPassword);
             $user->save();
 
-            // Send the temporary password by email
-            Mail::send('emails.temporary_password', ['temporaryPassword' => $temporaryPassword], function ($message) use ($user) {
-                $message->to($user->email);
-                $message->subject('Your Temporary Password');
-            });
+            Mail::to($user->email)->queue(new TemporaryPasswordMail($temporaryPassword));
 
             return response()->json([
                 'success' => true,
