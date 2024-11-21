@@ -20,6 +20,7 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'token' => $this->createToken('authToken')->plainTextToken,
             'roles' => $this->roles->pluck('name'),
+            'createdAt' => $this->created_at->format('d F, Y'),
         ];
     }
 }

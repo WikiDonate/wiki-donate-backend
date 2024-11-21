@@ -1,13 +1,13 @@
 <?php
 
 namespace App\Http\Controllers\v1;
+
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\NotificationResource;
 use App\Models\Notification;
 use App\Models\User;
-
-use Illuminate\Http\Request;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -36,7 +36,6 @@ class NotificationController extends Controller
     {
         try {
 
-            // dd($request->all());
             // Validate the input fields
             $validator = Validator::make($request->all(), [
                 'editTalkPage' => 'required|in:0,1',
@@ -67,7 +66,7 @@ class NotificationController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Notification settings saved successfully',
-                'data' => new NotificationResource($notification)
+                'data' => new NotificationResource($notification),
             ], Response::HTTP_CREATED);
 
         } catch (Exception $e) {
@@ -89,8 +88,8 @@ class NotificationController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => "Notification data found successfully",
-                'data' => new NotificationResource($notification)
+                'message' => 'Notification data found successfully',
+                'data' => new NotificationResource($notification),
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
@@ -150,7 +149,7 @@ class NotificationController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Notification settings update successfully',
-                'data' => new NotificationResource($notification)
+                'data' => new NotificationResource($notification),
             ], Response::HTTP_CREATED);
 
         } catch (Exception $e) {
