@@ -21,7 +21,7 @@ class NotificationController extends Controller
                     'success' => true,
                     'message' => 'Notification data is not found',
                     'data' => [],
-                ], Response::HTTP_NOT_FOUND);
+                ], Response::HTTP_OK);
             }
 
             return response()->json([
