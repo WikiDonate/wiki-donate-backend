@@ -20,9 +20,8 @@ Route::prefix('v1')->group(function () {
     // Authentication routes
     Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('user')->group(function () {
-            Route::post('notificationSave', [NotificationController::class, 'store']);
-            Route::post('notificationUpdate', [NotificationController::class, 'update']);
-            Route::get('notificationShow', [NotificationController::class, 'show']);
+            Route::post('notifications', [NotificationController::class, 'update']);
+            Route::get('notifications', [NotificationController::class, 'show']);
         });
     });
 
