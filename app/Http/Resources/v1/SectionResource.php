@@ -5,7 +5,7 @@ namespace App\Http\Resources\v1;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ArticleResource extends JsonResource
+class SectionResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,11 +17,8 @@ class ArticleResource extends JsonResource
         return [
             'uuid' => $this->uuid,
             'title' => $this->title,
-            'slug' => $this->slug,
             'content' => $this->content,
-            'created_at' => $this->created_at->format('d F, Y'),
-            'is_active' => $this->is_active ? 1 : 0,
-            'sections' => SectionResource::collection($this->sections),
+            'order' => $this->order,
         ];
     }
 }

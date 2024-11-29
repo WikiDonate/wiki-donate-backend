@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\v1\ArticleController;
 use App\Http\Controllers\v1\AuthController;
 use App\Http\Controllers\v1\ContactController;
 use App\Http\Controllers\v1\NotificationController;
@@ -24,5 +25,8 @@ Route::prefix('v1')->group(function () {
             Route::get('notifications', [NotificationController::class, 'show']);
         });
     });
+
+    // Article routes
+    Route::post('articles', [ArticleController::class, 'store']);
 
 });
