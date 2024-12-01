@@ -17,6 +17,10 @@ class ArticleController extends Controller
 {
     private function _parseHtmlSection($htmlText)
     {
+        if (empty($htmlText)) {
+            return [];
+        }
+
         $dom = new DOMDocument;
         @$dom->loadHTML($htmlText, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         // Get all <h2> elements
@@ -59,6 +63,10 @@ class ArticleController extends Controller
 
     private function _extractTitlesAndGenerateSlug($htmlText)
     {
+        if (empty($htmlText)) {
+            return [];
+        }
+
         // Parse the HTML and extract titles
         $sections = $this->_parseHtmlSection($htmlText);
 
@@ -109,8 +117,8 @@ class ArticleController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'nullable|string',
-            'content' => 'nullable|string',
+            'title' => 'required|string',
+            'content' => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -166,5 +174,35 @@ class ArticleController extends Controller
                 'errors' => [$e->getMessage()],
             ], Response::HTTP_EXPECTATION_FAILED);
         }
+    }
+
+    public function search(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'query' => 'required|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error',
+                'errors' => $validator->errors()->all(),
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        // Get the query parameter
+        $query = $request->input('query');
+
+        // Search for articles by title
+        $articles = Article::where('title', 'LIKE', '%'.$query.'%')
+            ->orderBy('title')
+            ->limit(20)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Articles found successfully',
+            'data' => ArticleResource::collection($articles),
+        ], Response::HTTP_OK);
     }
 }

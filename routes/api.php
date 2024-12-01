@@ -15,18 +15,25 @@ Route::prefix('v1')->group(function () {
     Route::post('changePassword', [UserController::class, 'changePassword'])->middleware('auth:sanctum');
     Route::post('forgotPassword', [AuthController::class, 'forgotPassword']);
 
+    // Search routes
+    Route::get('/search', [ArticleController::class, 'search']);
+
     //Contact routes
     Route::post('contact', [ContactController::class, 'store']);
 
     // Authentication routes
     Route::middleware('auth:sanctum')->group(function () {
+        // User routes
         Route::prefix('user')->group(function () {
             Route::post('notifications', [NotificationController::class, 'update']);
             Route::get('notifications', [NotificationController::class, 'show']);
         });
-    });
 
-    // Article routes
-    Route::post('articles', [ArticleController::class, 'store']);
+        // Articles routes
+        Route::prefix('articles')->group(function () {
+            Route::post('article', [ArticleController::class, 'store']);
+        });
+
+    });
 
 });
