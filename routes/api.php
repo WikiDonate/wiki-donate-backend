@@ -21,7 +21,6 @@ Route::prefix('v1')->group(function () {
     //Contact routes
     Route::post('contact', [ContactController::class, 'store']);
 
-    // Authentication routes
     Route::middleware('auth:sanctum')->group(function () {
         // User routes
         Route::prefix('user')->group(function () {
