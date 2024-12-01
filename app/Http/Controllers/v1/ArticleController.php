@@ -91,7 +91,7 @@ class ArticleController extends Controller
     public function index()
     {
         try {
-            $articles = Article::with('sections')->get();
+            $articles = Article::get();
             if ($articles->isEmpty()) {
                 return response()->json([
                     'success' => false,
@@ -112,6 +112,33 @@ class ArticleController extends Controller
                 'errors' => [$e->getMessage()],
             ], Response::HTTP_EXPECTATION_FAILED);
         }
+    }
+
+    public function show($uuid)
+    {
+        try {
+            $article = Article::where('uuid', $uuid)->first();
+            if (empty($article)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Article not found',
+                    'errors' => ['Article not found'],
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Article found successfully',
+                'data' => new ArticleResource($article),
+            ], Response::HTTP_OK);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Exceptions error',
+                'errors' => [$e->getMessage()],
+            ], Response::HTTP_EXPECTATION_FAILED);
+        }
+
     }
 
     public function store(Request $request)
@@ -140,10 +167,21 @@ class ArticleController extends Controller
                 ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
+            // Check duplicate slug from articles table
+            $duplicateSlug = Article::where('slug', Str::slug($request->title))->first();
+            if ($duplicateSlug) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Duplicate slug found',
+                    'errors' => ['Duplicate slug found'],
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
             // Create article
             $article = Article::create([
+                'user_id' => $request->user()->id,
                 'title' => $request->title,
-                'slug' => $this->_extractTitlesAndGenerateSlug($request->content),
+                'slug' => Str::slug($request->title),
                 'content' => $request->content,
             ]);
 
@@ -175,6 +213,26 @@ class ArticleController extends Controller
             ], Response::HTTP_EXPECTATION_FAILED);
         }
     }
+
+    // public function update(Request $request, Article $article)
+    // {
+    //     $validated = $request->validate([
+    //         'title' => 'sometimes|string|max:255',
+    //         'content' => 'sometimes|string',
+    //     ]);
+
+    //     $article->update($validated);
+
+    //     return response()->json($article);
+    // }
+
+    // // Delete an article
+    // public function destroy(Article $article)
+    // {
+    //     $article->delete();
+
+    //     return response()->json(null, 204);
+    // }
 
     public function search(Request $request)
     {

@@ -22,6 +22,7 @@ class ArticleResource extends JsonResource
             'created_at' => $this->created_at->format('d F, Y'),
             'is_active' => $this->is_active ? 1 : 0,
             'sections' => SectionResource::collection($this->sections),
+            'user' => $this->user,
         ];
     }
 }

@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 
 class Article extends Model
 {
-    protected $fillable = ['title', 'content', 'slug', 'is_active'];
+    protected $fillable = ['user_id', 'title', 'content', 'slug', 'is_active'];
 
     protected static function boot()
     {
@@ -23,5 +23,10 @@ class Article extends Model
     public function sections()
     {
         return $this->hasMany(Section::class)->orderBy('order');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class)->select('uuid', 'username');
     }
 }
