@@ -114,10 +114,10 @@ class ArticleController extends Controller
         }
     }
 
-    public function show($uuid)
+    public function show($slug)
     {
         try {
-            $article = Article::where('uuid', $uuid)->first();
+            $article = Article::where('slug', $slug)->first();
             if (empty($article)) {
                 return response()->json([
                     'success' => false,

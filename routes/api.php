@@ -31,7 +31,7 @@ Route::prefix('v1')->group(function () {
         // Articles routes
         Route::prefix('articles')->group(function () {
             Route::get('/', [ArticleController::class, 'index']);
-            Route::get('article/{uuid}', [ArticleController::class, 'show']);
+            Route::get('article/{slug}', [ArticleController::class, 'show']);
             Route::post('article', [ArticleController::class, 'store']);
         });
 
