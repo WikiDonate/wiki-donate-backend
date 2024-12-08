@@ -24,4 +24,9 @@ class Section extends Model
     {
         return $this->belongsTo(Article::class);
     }
+
+    public function versions()
+    {
+        return $this->hasMany(SectionVersion::class);
+    }
 }

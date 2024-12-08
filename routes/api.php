@@ -38,7 +38,8 @@ Route::prefix('v1')->group(function () {
 
             // Section routes
             Route::prefix('section')->group(function () {
-                Route::get('/{uuid}', [SectionController::class, 'show']);
+                Route::get('{uuid}', [SectionController::class, 'show']);
+                Route::put('{uuid}', [SectionController::class, 'update']);
             });
         });
 
