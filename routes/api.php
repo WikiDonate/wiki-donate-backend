@@ -4,6 +4,7 @@ use App\Http\Controllers\v1\ArticleController;
 use App\Http\Controllers\v1\AuthController;
 use App\Http\Controllers\v1\ContactController;
 use App\Http\Controllers\v1\NotificationController;
+use App\Http\Controllers\v1\SectionController;
 use App\Http\Controllers\v1\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +34,12 @@ Route::prefix('v1')->group(function () {
             Route::get('/', [ArticleController::class, 'index']);
             Route::get('article/{slug}', [ArticleController::class, 'show']);
             Route::post('article', [ArticleController::class, 'store']);
+            Route::get('section', [ArticleController::class, 'getSection']);
+
+            // Section routes
+            Route::prefix('section')->group(function () {
+                Route::get('/{uuid}', [SectionController::class, 'show']);
+            });
         });
 
     });
