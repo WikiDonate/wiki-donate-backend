@@ -5,7 +5,6 @@ namespace App\Http\Controllers\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\ArticleResource;
 use App\Models\Article;
-use DOMDocument;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,79 +14,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ArticleController extends Controller
 {
-    private function _parseHtmlSection($htmlText)
-    {
-        if (empty($htmlText)) {
-            return [];
-        }
-
-        $dom = new DOMDocument;
-        @$dom->loadHTML($htmlText, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-        // Get all <h2> elements
-        $headings = $dom->getElementsByTagName('h2');
-        $data = [];
-
-        foreach ($headings as $heading) {
-            // Extract the title text, including any child elements like <u>
-            $title = trim($dom->saveHTML($heading));
-            // Get the next sibling of the <h2> tag
-            $nextElement = $heading->nextSibling;
-            $content = '';
-
-            while ($nextElement) {
-                if ($nextElement->nodeName === 'h2') {
-                    // Stop when the next <h2> is encountered
-                    break;
-                }
-
-                if ($nextElement->nodeType === XML_ELEMENT_NODE) {
-                    // Append the content if it's an HTML element
-                    $content .= $dom->saveHTML($nextElement);
-                }
-
-                $nextElement = $nextElement->nextSibling;
-            }
-
-            // Clean up any extra <br> tags or empty content
-            $content = preg_replace('/<p>\s*<br>\s*<\/p>/', '', trim($content));
-
-            // Add the title and content to the result
-            $data[] = [
-                'title' => $title,
-                'content' => $content,
-            ];
-        }
-
-        return $data;
-    }
-
-    private function _extractTitlesAndGenerateSlug($htmlText)
-    {
-        if (empty($htmlText)) {
-            return [];
-        }
-
-        // Parse the HTML and extract titles
-        $sections = $this->_parseHtmlSection($htmlText);
-
-        // Generate a slug from the extracted titles
-        $slug = Str::slug(
-            implode(
-                '-',
-                array_slice(
-                    array_map(function ($section) {
-                        // Remove HTML tags from the title
-                        return strip_tags($section['title']);
-                    }, $sections),
-                    0,
-                    min(5, count($sections)) // Limit to first 5 titles
-                )
-            )
-        );
-
-        return $slug;
-    }
-
     public function index()
     {
         try {
@@ -158,7 +84,7 @@ class ArticleController extends Controller
 
         DB::beginTransaction();
         try {
-            $sections = $this->_parseHtmlSection($request->content);
+            $sections = parseHtmlSection($request->content);
             if (empty($sections)) {
                 return response()->json([
                     'success' => false,

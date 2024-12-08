@@ -56,6 +56,18 @@ class SectionController extends Controller
 
         DB::beginTransaction();
         try {
+            // Parse HTML sections
+            $htmlSections = parseHtmlSection($request->content);
+            if (empty($htmlSections)) {
+                DB::rollBack();
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error',
+                    'errors' => ['No sections found'],
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
             // Check if the section exists
             $section = Section::where('uuid', $uuid)->first();
             if (empty($section)) {
@@ -70,15 +82,24 @@ class SectionController extends Controller
 
             // Create a new section version
             $latestVersionNumber = $section->versions()->max('version_number') ?? 0;
-            $section->versions()->create([
-                'content' => $section->content,
-                'version_number' => $latestVersionNumber + 1,
-                'updated_by' => auth()->id(),
-            ]);
+            $htmlSection = collect($htmlSections)->first();
+
+            $section->versions()->updateOrCreate(
+                [
+                    'title' => $htmlSection['title'],
+                    'content' => $htmlSection['content'],
+
+                ],
+                [
+                    'version_number' => $latestVersionNumber + 1,
+                    'updated_by' => auth()->id(),
+                ]
+            );
 
             // Update the section content
             $section->update([
-                'content' => $request->input('content'),
+                'title' => $htmlSection['title'],
+                'content' => $htmlSection['content'],
             ]);
 
             DB::commit();
