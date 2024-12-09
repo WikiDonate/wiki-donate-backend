@@ -5,7 +5,7 @@ namespace App\Http\Resources\v1;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class SectionResource extends JsonResource
+class SectionVersionResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,8 +18,10 @@ class SectionResource extends JsonResource
             'uuid' => $this->uuid,
             'title' => $this->title,
             'content' => $this->content,
-            'order' => $this->order,
-            'versions' => SectionVersionResource::collection($this->versions),
+            'versionNumber' => $this->version_number,
+            'createdAt' => $this->created_at->format('d F, Y'),
+            'updatedBy' => $this->user,
+
         ];
     }
 }

@@ -140,26 +140,6 @@ class ArticleController extends Controller
         }
     }
 
-    // public function update(Request $request, Article $article)
-    // {
-    //     $validated = $request->validate([
-    //         'title' => 'sometimes|string|max:255',
-    //         'content' => 'sometimes|string',
-    //     ]);
-
-    //     $article->update($validated);
-
-    //     return response()->json($article);
-    // }
-
-    // // Delete an article
-    // public function destroy(Article $article)
-    // {
-    //     $article->delete();
-
-    //     return response()->json(null, 204);
-    // }
-
     public function search(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -188,5 +168,10 @@ class ArticleController extends Controller
             'message' => 'Articles found successfully',
             'data' => ArticleResource::collection($articles),
         ], Response::HTTP_OK);
+    }
+
+    public function getVersions($slug)
+    {
+        return false;
     }
 }
