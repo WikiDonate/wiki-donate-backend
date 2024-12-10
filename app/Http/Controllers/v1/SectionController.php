@@ -80,21 +80,20 @@ class SectionController extends Controller
                 ], Response::HTTP_NOT_FOUND);
             }
 
+            // dd($section);
+
             // Create a new section version
             $latestVersionNumber = $section->versions()->max('version_number') ?? 0;
             $htmlSection = collect($htmlSections)->first();
+            // dd($htmlSection);
 
-            $section->versions()->updateOrCreate(
-                [
-                    'title' => $htmlSection['title'],
-                    'content' => $htmlSection['content'],
+            $section->versions()->create([
+                'title' => $htmlSection['title'],
+                'content' => $htmlSection['content'],
+                'version_number' => $latestVersionNumber + 1,
+                'updated_by' => auth()->id(),
 
-                ],
-                [
-                    'version_number' => $latestVersionNumber + 1,
-                    'updated_by' => auth()->id(),
-                ]
-            );
+            ]);
 
             // Update the section content
             $section->update([

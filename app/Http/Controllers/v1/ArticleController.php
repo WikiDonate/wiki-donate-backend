@@ -4,7 +4,9 @@ namespace App\Http\Controllers\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\ArticleResource;
+use App\Http\Resources\v1\HistoryResource;
 use App\Models\Article;
+use App\Models\SectionVersion;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -85,6 +87,7 @@ class ArticleController extends Controller
         DB::beginTransaction();
         try {
             $sections = parseHtmlSection($request->content);
+
             if (empty($sections)) {
                 return response()->json([
                     'success' => false,
@@ -170,8 +173,42 @@ class ArticleController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function getVersions($slug)
+    public function history($slug)
     {
-        return false;
+        try {
+            $article = Article::where('slug', $slug)->first();
+            if (empty($article)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Article not found',
+                    'errors' => ['Article not found'],
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            // Get sections
+            $sectionsIds = $article->sections()->orderBy('order')->orderBy('created_at')->pluck('id')->toArray();
+
+            // Get versions
+            $versions = SectionVersion::whereIn('section_id', $sectionsIds)
+                ->with(['section', 'user'])
+                ->orderBy('created_at', 'desc')
+                ->orderBy('section_id')
+                ->orderBy('version_number')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Article found successfully',
+                'data' => HistoryResource::collection($versions),
+            ], Response::HTTP_OK);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Exceptions error',
+                'errors' => [$e->getMessage()],
+            ], Response::HTTP_EXPECTATION_FAILED);
+        }
+
     }
 }

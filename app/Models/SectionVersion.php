@@ -27,6 +27,6 @@ class SectionVersion extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'updated_by')->select('uuid', 'username');
+        return $this->belongsTo(User::class, 'updated_by');
     }
 }

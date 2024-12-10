@@ -35,7 +35,7 @@ Route::prefix('v1')->group(function () {
             Route::get('article/{slug}', [ArticleController::class, 'show']);
             Route::post('article', [ArticleController::class, 'store']);
             Route::get('section', [ArticleController::class, 'getSection']);
-            Route::get('versions', [ArticleController::class, 'getVersions']);
+            Route::get('history/{slug}', [ArticleController::class, 'history']);
 
             // Section routes
             Route::prefix('section')->group(function () {
