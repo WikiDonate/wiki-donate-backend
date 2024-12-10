@@ -192,13 +192,13 @@ class ArticleController extends Controller
             $versions = SectionVersion::whereIn('section_id', $sectionsIds)
                 ->with(['section', 'user'])
                 ->orderBy('created_at', 'desc')
-                ->orderBy('section_id')
-                ->orderBy('version_number')
+                // ->orderBy('section_id')
+                // ->orderBy('version_number', 'desc')
                 ->get();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Article found successfully',
+                'message' => 'History found successfully',
                 'data' => HistoryResource::collection($versions),
             ], Response::HTTP_OK);
 

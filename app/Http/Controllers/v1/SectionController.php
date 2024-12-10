@@ -89,7 +89,8 @@ class SectionController extends Controller
 
             $section->versions()->create([
                 'title' => $htmlSection['title'],
-                'content' => $htmlSection['content'],
+                // 'content' => $htmlSection['content'],
+                'content' => $section['content'],
                 'version_number' => $latestVersionNumber + 1,
                 'updated_by' => auth()->id(),
 
