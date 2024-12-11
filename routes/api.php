@@ -22,28 +22,23 @@ Route::prefix('v1')->group(function () {
     //Contact routes
     Route::post('contact', [ContactController::class, 'store']);
 
-    Route::middleware('auth:sanctum')->group(function () {
-        // User routes
-        Route::prefix('user')->group(function () {
-            Route::post('notifications', [NotificationController::class, 'update']);
-            Route::get('notifications', [NotificationController::class, 'show']);
+    // User authenticated routes
+    Route::prefix('user')->middleware('auth:sanctum')->group(function () {
+        Route::post('notifications', [NotificationController::class, 'update']);
+        Route::get('notifications', [NotificationController::class, 'show']);
+    });
+
+    // Articles routes
+    Route::prefix('articles')->group(function () {
+        Route::get('/', [ArticleController::class, 'index']);
+        Route::get('{slug}', [ArticleController::class, 'show']);
+        Route::get('sections/{uuid}', [SectionController::class, 'show']);
+        Route::get('{slug}/history', [ArticleController::class, 'history']);
+
+        Route::middleware('auth:sanctum')->group(function () {
+            Route::post('/', [ArticleController::class, 'store']);
+            Route::put('sections/{uuid}', [SectionController::class, 'update']);
         });
-
-        // Articles routes
-        Route::prefix('articles')->group(function () {
-            Route::get('/', [ArticleController::class, 'index']);
-            Route::get('article/{slug}', [ArticleController::class, 'show']);
-            Route::post('article', [ArticleController::class, 'store']);
-            Route::get('section', [ArticleController::class, 'getSection']);
-            Route::get('history/{slug}', [ArticleController::class, 'history']);
-
-            // Section routes
-            Route::prefix('section')->group(function () {
-                Route::get('{uuid}', [SectionController::class, 'show']);
-                Route::put('{uuid}', [SectionController::class, 'update']);
-            });
-        });
-
     });
 
 });
