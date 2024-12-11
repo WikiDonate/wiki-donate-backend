@@ -115,14 +115,14 @@ class ArticleController extends Controller
             ]);
 
             // Create sections
-            foreach ($sections as $order => $section) {
-                $article->sections()->create([
-                    'article_id' => $article->id,
-                    'title' => $section['title'],
-                    'content' => $section['content'],
-                    'order' => $order,
-                ]);
-            }
+            // foreach ($sections as $order => $section) {
+            //     $article->sections()->create([
+            //         'article_id' => $article->id,
+            //         'title' => $section['title'],
+            //         'content' => $section['content'],
+            //         'order' => $order,
+            //     ]);
+            // }
 
             DB::commit();
 
