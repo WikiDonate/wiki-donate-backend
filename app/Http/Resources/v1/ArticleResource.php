@@ -18,10 +18,11 @@ class ArticleResource extends JsonResource
             'uuid' => $this->uuid,
             'title' => $this->title,
             'slug' => $this->slug,
-            'content' => $this->content,
+            // 'content' => $this->content,
+            'sections' => $this->sections,
             'created_at' => $this->created_at->format('d F, Y'),
-            'is_active' => $this->is_active ? 1 : 0,
-            'sections' => SectionResource::collection($this->sections),
+            // 'is_active' => $this->is_active ? 1 : 0,
+            // 'sections' => SectionResource::collection($this->sections),
             'user' => $this->user,
         ];
     }

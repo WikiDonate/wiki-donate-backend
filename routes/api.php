@@ -30,14 +30,17 @@ Route::prefix('v1')->group(function () {
 
     // Articles routes
     Route::prefix('articles')->group(function () {
-        Route::get('/', [ArticleController::class, 'index']);
+        // Route::get('/', [ArticleController::class, 'index']);
+        Route::get('/', [ArticleController::class, 'index2']);
         Route::get('{slug}', [ArticleController::class, 'show']);
-        Route::get('sections/{uuid}', [SectionController::class, 'show']);
-        Route::get('{slug}/history', [ArticleController::class, 'history']);
+        // Route::get('sections/{uuid}', [SectionController::class, 'show']);
+        Route::get('{slug}/history', [ArticleController::class, 'history2']);
 
         Route::middleware('auth:sanctum')->group(function () {
-            Route::post('/', [ArticleController::class, 'store']);
-            Route::put('sections/{uuid}', [SectionController::class, 'update']);
+            // Route::post('/', [ArticleController::class, 'store']);
+            Route::post('/', [ArticleController::class, 'save']);
+            Route::put('update/{slug}', [ArticleController::class, 'update']);
+            // Route::put('sections/{uuid}', [SectionController::class, 'update']);
         });
     });
 

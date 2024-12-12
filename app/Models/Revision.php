@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class Article extends Model
+class Revision extends Model
 {
-    protected $fillable = ['user_id', 'title',  'slug', 'sections', 'is_active'];
+    protected $fillable = ['uuid', 'article_id', 'user_id',  'version', 'old_content', 'new_content', 'created_at'];
 
     protected static function boot()
     {
@@ -18,11 +18,6 @@ class Article extends Model
                 $model->uuid = Str::uuid()->toString();
             }
         });
-    }
-
-    public function sections()
-    {
-        return $this->hasMany(Section::class)->orderBy('order');
     }
 
     public function user()
