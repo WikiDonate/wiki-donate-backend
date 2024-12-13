@@ -29,7 +29,7 @@ class ArticleController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'User registered successfully',
+                'message' => 'Articles found successfully',
                 'data' => ArticleResource::collection($articles),
             ], Response::HTTP_OK);
         } catch (Exception $e) {
@@ -252,6 +252,12 @@ class ArticleController extends Controller
             }
 
             $versions = Revision::where('article_id', $article->id)->orderBy('version', 'desc')->get();
+            if ($versions->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'History not found',
+                ], Response::HTTP_NOT_FOUND);
+            }
 
             return response()->json([
                 'success' => true,
