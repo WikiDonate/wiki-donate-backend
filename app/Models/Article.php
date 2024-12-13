@@ -20,11 +20,6 @@ class Article extends Model
         });
     }
 
-    public function sections()
-    {
-        return $this->hasMany(Section::class)->orderBy('order');
-    }
-
     public function user()
     {
         return $this->belongsTo(User::class)->select('uuid', 'username');

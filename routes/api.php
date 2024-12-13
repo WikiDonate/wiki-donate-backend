@@ -4,7 +4,6 @@ use App\Http\Controllers\v1\ArticleController;
 use App\Http\Controllers\v1\AuthController;
 use App\Http\Controllers\v1\ContactController;
 use App\Http\Controllers\v1\NotificationController;
-use App\Http\Controllers\v1\SectionController;
 use App\Http\Controllers\v1\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -30,17 +29,13 @@ Route::prefix('v1')->group(function () {
 
     // Articles routes
     Route::prefix('articles')->group(function () {
-        // Route::get('/', [ArticleController::class, 'index']);
-        Route::get('/', [ArticleController::class, 'index2']);
+        Route::get('/', [ArticleController::class, 'index']);
         Route::get('{slug}', [ArticleController::class, 'show']);
-        // Route::get('sections/{uuid}', [SectionController::class, 'show']);
-        Route::get('{slug}/history', [ArticleController::class, 'history2']);
+        Route::get('{slug}/history', [ArticleController::class, 'history']);
 
         Route::middleware('auth:sanctum')->group(function () {
-            // Route::post('/', [ArticleController::class, 'store']);
             Route::post('/', [ArticleController::class, 'save']);
             Route::put('update/{slug}', [ArticleController::class, 'update']);
-            // Route::put('sections/{uuid}', [SectionController::class, 'update']);
         });
     });
 
