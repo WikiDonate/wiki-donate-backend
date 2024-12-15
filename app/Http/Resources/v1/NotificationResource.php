@@ -16,12 +16,11 @@ class NotificationResource extends JsonResource
     {
         return [
             'uuid' => $this->uuid,
-            'user_id' => $this->user_id,
-            'edit_talk_page' => $this->edit_talk_page,
-            'edit_user_page' => $this->edit_user_page,
-            'page_review' => $this->page_review,
-            'email_from_other' => $this->email_from_other,
-            'successful_mention' => $this->successful_mention
+            'editTalkPage' => $this->edit_talk_page,
+            'editUserPage' => $this->edit_user_page,
+            'pageReview' => $this->page_review,
+            'emailFromOther' => $this->email_from_other,
+            'successfulMention' => $this->successful_mention,
         ];
     }
 }

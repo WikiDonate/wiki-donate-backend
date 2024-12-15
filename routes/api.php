@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\v1\ArticleController;
 use App\Http\Controllers\v1\AuthController;
 use App\Http\Controllers\v1\ContactController;
 use App\Http\Controllers\v1\NotificationController;
@@ -14,15 +15,27 @@ Route::prefix('v1')->group(function () {
     Route::post('changePassword', [UserController::class, 'changePassword'])->middleware('auth:sanctum');
     Route::post('forgotPassword', [AuthController::class, 'forgotPassword']);
 
+    // Search routes
+    Route::get('/search', [ArticleController::class, 'search']);
+
     //Contact routes
     Route::post('contact', [ContactController::class, 'store']);
 
-    // Authentication routes
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::prefix('user')->group(function () {
-            Route::post('notificationSave', [NotificationController::class, 'store']);
-            Route::post('notificationUpdate', [NotificationController::class, 'update']);
-            Route::get('notificationShow', [NotificationController::class, 'show']);
+    // User authenticated routes
+    Route::prefix('user')->middleware('auth:sanctum')->group(function () {
+        Route::post('notifications', [NotificationController::class, 'update']);
+        Route::get('notifications', [NotificationController::class, 'show']);
+    });
+
+    // Articles routes
+    Route::prefix('articles')->group(function () {
+        Route::get('/', [ArticleController::class, 'index']);
+        Route::get('{slug}', [ArticleController::class, 'show']);
+        Route::get('{slug}/history', [ArticleController::class, 'history']);
+
+        Route::middleware('auth:sanctum')->group(function () {
+            Route::post('/', [ArticleController::class, 'save']);
+            Route::put('update/{slug}', [ArticleController::class, 'update']);
         });
     });
 
