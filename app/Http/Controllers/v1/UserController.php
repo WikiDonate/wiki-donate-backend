@@ -38,7 +38,7 @@ class UserController extends Controller
                 'password' => Hash::make($request->password),
             ]);
 
-            $user->assignRole('editor');
+            $user->assignRole('Editor');
 
             return response()->json([
                 'success' => true,
@@ -76,7 +76,7 @@ class UserController extends Controller
             $user = $request->user();
 
             // Check if the user was successfully retrieved
-            if (!$user) {
+            if (! $user) {
                 return response()->json([
                     'success' => false,
                     'message' => 'User not authenticated',

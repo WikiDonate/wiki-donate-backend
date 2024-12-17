@@ -13,11 +13,11 @@ class RoleSeeder extends Seeder
     public function run(): void
     {
         // Define the roles you want to create
-        $roles = ['admin', 'Editor'];
+        $roles = ['Admin', 'Editor'];
 
         // Create each role
         foreach ($roles as $roleName) {
-            Role::firstOrCreate(['name' => $roleName, 'guard_name' => 'api']);
+            Role::firstOrCreate(['name' => $roleName, 'guard_name' => 'web']);
         }
     }
 }
