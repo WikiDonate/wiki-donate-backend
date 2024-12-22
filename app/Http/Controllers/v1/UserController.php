@@ -4,10 +4,12 @@ namespace App\Http\Controllers\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\UserResource;
+use App\Mail\CongratulationMail;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -39,6 +41,9 @@ class UserController extends Controller
             ]);
 
             $user->assignRole('Editor');
+
+            // Send email
+            Mail::to($user->email)->queue(new CongratulationMail($user));
 
             return response()->json([
                 'success' => true,
