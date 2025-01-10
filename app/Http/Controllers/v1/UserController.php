@@ -22,7 +22,7 @@ class UserController extends Controller
                 'username' => 'required|unique:users',
                 'password' => 'required',
                 'confirmPassword' => 'required|same:password',
-                'email' => 'required|email|unique:users',
+                'email' => 'nullable|email|unique:users',
             ]);
 
             if ($validator->fails()) {
@@ -36,14 +36,16 @@ class UserController extends Controller
             // Create user
             $user = User::create([
                 'username' => $request->username,
-                'email' => $request->email,
+                'email' => $request->email ?? null,
                 'password' => Hash::make($request->password),
             ]);
 
             $user->assignRole('Editor');
 
             // Send email
-            Mail::to($user->email)->queue(new CongratulationMail($user));
+            if (!empty($user->email)) {
+                Mail::to($user->email)->queue(new CongratulationMail($user));
+            }
 
             return response()->json([
                 'success' => true,
