@@ -4,10 +4,12 @@ namespace App\Http\Controllers\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\UserResource;
+use App\Mail\CongratulationMail;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -20,7 +22,7 @@ class UserController extends Controller
                 'username' => 'required|unique:users',
                 'password' => 'required',
                 'confirmPassword' => 'required|same:password',
-                'email' => 'required|email|unique:users',
+                'email' => 'nullable|email|unique:users',
             ]);
 
             if ($validator->fails()) {
@@ -34,11 +36,16 @@ class UserController extends Controller
             // Create user
             $user = User::create([
                 'username' => $request->username,
-                'email' => $request->email,
+                'email' => $request->email ?? null,
                 'password' => Hash::make($request->password),
             ]);
 
             $user->assignRole('Editor');
+
+            // Send email
+            if (!empty($user->email)) {
+                Mail::to($user->email)->queue(new CongratulationMail($user));
+            }
 
             return response()->json([
                 'success' => true,
