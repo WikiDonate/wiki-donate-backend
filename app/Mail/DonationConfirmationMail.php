@@ -3,23 +3,24 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class TemporaryPasswordMail extends Mailable
+class DonationConfirmationMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $temporaryPassword;
+    public $data;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($temporaryPassword)
+    public function __construct($data)
     {
-        $this->temporaryPassword = $temporaryPassword;
+        $this->data = $data;
     }
 
     /**
@@ -28,7 +29,7 @@ class TemporaryPasswordMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Your Temporary Password',
+            subject: 'Donation Confirmation',
         );
     }
 
@@ -38,9 +39,9 @@ class TemporaryPasswordMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.temporary-password',
+            view: 'emails.donation-confirmation',
             with: [
-                'temporaryPassword' => $this->temporaryPassword,
+                'data' => $this->data,
             ],
         );
     }

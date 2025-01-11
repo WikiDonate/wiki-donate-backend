@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\v1;
 
 use App\Http\Controllers\Controller;
+use App\Mail\DonationConfirmationMail;
 use App\Models\Donate;
-use Illuminate\Http\Request;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
@@ -43,6 +44,18 @@ class DonateController extends Controller
                 'amount' => $request->amount,
             ]);
 
+            // Send email
+            if (! empty($request->email)) {
+                $mailData = [
+                    'name' => $request->name,
+                    'amount' => $request->amount,
+                    'date' => now()->toFormattedDateString(),
+                ];
+
+                Mail::to($request->email)->queue(new DonationConfirmationMail($mailData));
+
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Donate details saved successfully.',
@@ -58,4 +71,3 @@ class DonateController extends Controller
         }
     }
 }
-
