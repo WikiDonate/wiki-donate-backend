@@ -3,6 +3,7 @@
 use App\Http\Controllers\v1\ArticleController;
 use App\Http\Controllers\v1\AuthController;
 use App\Http\Controllers\v1\ContactController;
+use App\Http\Controllers\v1\DonateController;
 use App\Http\Controllers\v1\NotificationController;
 use App\Http\Controllers\v1\UserController;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +21,9 @@ Route::prefix('v1')->group(function () {
 
     //Contact routes
     Route::post('contact', [ContactController::class, 'store']);
+
+    //Donate routes
+    Route::post('donate', [DonateController::class, 'store']);
 
     // User authenticated routes
     Route::prefix('user')->middleware('auth:sanctum')->group(function () {
