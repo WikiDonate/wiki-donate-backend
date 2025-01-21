@@ -19,4 +19,9 @@ class Talk extends Model
             }
         });
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class)->select('uuid', 'username');
+    }
 }

@@ -5,6 +5,7 @@ use App\Http\Controllers\v1\AuthController;
 use App\Http\Controllers\v1\ContactController;
 use App\Http\Controllers\v1\DonateController;
 use App\Http\Controllers\v1\NotificationController;
+use App\Http\Controllers\v1\TalkController;
 use App\Http\Controllers\v1\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -40,6 +41,18 @@ Route::prefix('v1')->group(function () {
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/', [ArticleController::class, 'save']);
             Route::put('update/{slug}', [ArticleController::class, 'update']);
+        });
+    });
+
+    // Talk routes
+    Route::prefix('talks')->group(function () {
+        Route::get('/', [TalkController::class, 'index']);
+        Route::get('{slug}', [TalkController::class, 'show']);
+        Route::get('{slug}/history', [TalkController::class, 'history']);
+
+        Route::middleware('auth:sanctum')->group(function () {
+            Route::post('/', [TalkController::class, 'save']);
+            Route::put('update/{slug}', [TalkController::class, 'update']);
         });
     });
 
