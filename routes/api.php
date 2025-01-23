@@ -46,9 +46,9 @@ Route::prefix('v1')->group(function () {
 
     // Talk routes
     Route::prefix('talks')->group(function () {
-        Route::get('/', [TalkController::class, 'index']);
+        // Route::get('/', [TalkController::class, 'index']);
         Route::get('{slug}', [TalkController::class, 'show']);
-        Route::get('{slug}/history', [TalkController::class, 'history']);
+        // Route::get('{slug}/history', [TalkController::class, 'history']);
 
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/', [TalkController::class, 'save']);

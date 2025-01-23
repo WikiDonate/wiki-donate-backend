@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 
 class Talk extends Model
 {
-    protected $fillable = ['article_id', 'title',  'slug', 'sections', 'is_active'];
+    protected $fillable = ['user_id', 'article_id', 'title',  'slug', 'sections', 'is_active'];
 
     protected static function boot()
     {

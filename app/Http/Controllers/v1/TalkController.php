@@ -9,6 +9,7 @@ use App\Http\Resources\v1\TalkResource;
 use App\Models\Article;
 use App\Models\Revision;
 use App\Models\Talk;
+use App\Models\TalkRevision;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -55,10 +56,19 @@ class TalkController extends Controller
                 ], Response::HTTP_NOT_FOUND);
             }
 
+            $talk = Talk::where('article_id', $article->id)->first();
+            if (empty($talk)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Talk is not found',
+                    'errors' => ['Talk is not found'],
+                ], Response::HTTP_NOT_FOUND);
+            }
+
             return response()->json([
                 'success' => true,
-                'message' => 'Article found successfully',
-                'data' => new ArticleResource($article),
+                'message' => 'Talk found successfully',
+                'data' => new TalkResource($talk),
             ], Response::HTTP_OK);
         } catch (Exception $e) {
             return response()->json([
@@ -73,6 +83,7 @@ class TalkController extends Controller
     public function save(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'articleUuid' => 'required|exists:articles,uuid',
             'title' => 'required|string',
             'content' => 'required|string',
         ]);
@@ -96,8 +107,8 @@ class TalkController extends Controller
                 ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
-            // Check duplicate slug from articles table
-            $duplicateSlug = Article::where('slug', Str::slug($request->title))->first();
+            // Check duplicate slug
+            $duplicateSlug = Talk::where('slug', Str::slug($request->title))->first();
             if ($duplicateSlug) {
                 return response()->json([
                     'success' => false,
@@ -106,23 +117,22 @@ class TalkController extends Controller
                 ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
-            // Create article
-            $article = Article::create([
+            // Create talk
+            $talk = Talk::create([
                 'user_id' => $request->user()->id,
+                'article_id' => Article::where('uuid', $request->articleUuid)->first()->id,
                 'title' => $request->title,
                 'slug' => Str::slug($request->title),
-                // 'content' => $request->content,
                 'sections' => json_encode($sections),
             ]);
 
             return response()->json([
                 'success' => true,
-                'message' => 'The article has been created successfully',
-                'data' => new ArticleResource($article),
+                'message' => 'The talk has been created successfully',
+                'data' => new TalkResource($talk),
             ], Response::HTTP_CREATED);
 
         } catch (Exception $e) {
-
             return response()->json([
                 'success' => false,
                 'message' => 'Exceptions error',
@@ -134,6 +144,7 @@ class TalkController extends Controller
     public function update(Request $request, $slug)
     {
         $validator = Validator::make($request->all(), [
+            'uuid' => 'required|exists:talks,uuid',
             'title' => 'required|string',
             'content' => 'required|string',
         ]);
@@ -147,17 +158,17 @@ class TalkController extends Controller
         }
 
         try {
-            // Check existing article
-            $existsArticle = Article::where('slug', Str::slug($request->title))->first();
-            if (! $existsArticle) {
+            // Check existing talk
+            $existsTalk = Talk::where('uuid', $request->uuid)->first();
+            if (! $existsTalk) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Article not found',
-                    'errors' => ['Article not found'],
+                    'message' => 'Talk not found',
+                    'errors' => ['Talk not found'],
                 ], Response::HTTP_NOT_FOUND);
             }
 
-            $oldSections = json_decode($existsArticle->sections, true);
+            $oldSections = json_decode($existsTalk->sections, true);
 
             // Parse HTML sections
             $sections = parseHtmlSection($request->content);
@@ -178,17 +189,17 @@ class TalkController extends Controller
                 ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
-            // Update article
-            $existsArticle->update([
+            // Update talk
+            $existsTalk->update([
                 'title' => $request->title,
                 'sections' => json_encode($sections),
             ]);
 
-            $latestVersionNumber = Revision::where('article_id', $existsArticle->id)->max('version') ?? 0;
+            $latestVersionNumber = TalkRevision::where('talk_id', $existsTalk->id)->max('version') ?? 0;
 
             // Create versions
-            Revision::create([
-                'article_id' => $existsArticle->id,
+            TalkRevision::create([
+                'talk_id' => $existsTalk->id,
                 'user_id' => $request->user()->id,
                 'version' => $latestVersionNumber + 1,
                 'old_content' => json_encode($oldSections),
@@ -198,8 +209,8 @@ class TalkController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'The article updated successfully',
-                'data' => new ArticleResource(Article::find($existsArticle->id)),
+                'message' => 'The talk updated successfully',
+                'data' => new TalkResource(Talk::find($existsTalk->id)),
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
