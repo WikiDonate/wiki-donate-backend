@@ -7,7 +7,6 @@ use App\Http\Resources\v1\ArticleResource;
 use App\Http\Resources\v1\RevisionResource;
 use App\Http\Resources\v1\TalkResource;
 use App\Models\Article;
-use App\Models\Revision;
 use App\Models\Talk;
 use App\Models\TalkRevision;
 use Exception;
@@ -18,32 +17,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class TalkController extends Controller
 {
-    public function index()
-    {
-        try {
-            $talks = Talk::get();
-            if ($talks->isEmpty()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No talks found',
-                    'errors' => ['No talks found'],
-                ], Response::HTTP_NOT_FOUND);
-            }
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Talks found successfully',
-                'data' => TalkResource::collection($talks),
-            ], Response::HTTP_OK);
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Exceptions error',
-                'errors' => [$e->getMessage()],
-            ], Response::HTTP_EXPECTATION_FAILED);
-        }
-    }
-
     public function show($slug)
     {
         try {
@@ -255,16 +228,16 @@ class TalkController extends Controller
     public function history($slug)
     {
         try {
-            $article = Article::where('slug', $slug)->first();
-            if (empty($article)) {
+            $talk = Talk::where('slug', $slug)->first();
+            if (empty($talk)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Article not found',
-                    'errors' => ['Article not found'],
+                    'message' => 'Talk not found',
+                    'errors' => ['Talk not found'],
                 ], Response::HTTP_NOT_FOUND);
             }
 
-            $versions = Revision::where('article_id', $article->id)->orderBy('version', 'desc')->get();
+            $versions = TalkRevision::where('talk_id', $talk->id)->orderBy('version', 'desc')->get();
             if ($versions->isEmpty()) {
                 return response()->json([
                     'success' => false,
