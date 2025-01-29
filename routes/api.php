@@ -10,21 +10,18 @@ use App\Http\Controllers\v1\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
-    // User routes
     Route::post('user', [UserController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
     Route::post('changePassword', [UserController::class, 'changePassword'])->middleware('auth:sanctum');
     Route::post('forgotPassword', [AuthController::class, 'forgotPassword']);
-
-    // Search routes
     Route::get('/search', [ArticleController::class, 'search']);
-
-    //Contact routes
     Route::post('contact', [ContactController::class, 'store']);
 
-    //Donate routes
-    Route::post('donate', [DonateController::class, 'store']);
+    // Authenticated routes
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('donate', [DonateController::class, 'store']);
+    });
 
     // User authenticated routes
     Route::prefix('user')->middleware('auth:sanctum')->group(function () {
