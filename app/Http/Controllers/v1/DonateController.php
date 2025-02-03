@@ -22,7 +22,7 @@ class DonateController extends Controller
             'expiryMonth' => 'required|digits:2',
             'expiryYear' => 'required|digits:4',
             'cvv' => 'required|digits_between:3,4',
-            'amount' => 'required|numeric|min:0.01',
+            'amount' => 'required|numeric|min:1',
         ]);
 
         if ($validator->fails()) {
