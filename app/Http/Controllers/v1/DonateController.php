@@ -35,6 +35,7 @@ class DonateController extends Controller
 
         try {
             Donate::create([
+                'user_id' => auth()->user()->id ?? null,
                 'name' => $request->name,
                 'email' => $request->email,
                 'card_number' => $request->cardNumber,
