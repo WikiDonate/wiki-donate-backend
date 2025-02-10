@@ -10,7 +10,7 @@ use App\Http\Controllers\v1\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
-    Route::post('user', [UserController::class, 'register']);
+    Route::post('user', [UserController::class, 'register'])->middleware('throttle:5,10');
     Route::post('login', [AuthController::class, 'login']);
     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
     Route::post('changePassword', [UserController::class, 'changePassword'])->middleware('auth:sanctum');

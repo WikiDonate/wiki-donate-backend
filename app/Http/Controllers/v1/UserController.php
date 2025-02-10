@@ -23,14 +23,34 @@ class UserController extends Controller
                 'password' => 'required',
                 'confirmPassword' => 'required|same:password',
                 'email' => 'nullable|email|unique:users',
+                'token' => 'required',
             ]);
 
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Error',
+                    'message' => 'Validation Error',
                     'errors' => $validator->errors()->all(),
                 ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
+            if (! verifyRecaptcha($request->token)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'reCAPTCHA verification failed',
+                    'errors' => 'reCAPTCHA verification failed',
+                ], Response::HTTP_FORBIDDEN);
+            }
+
+            if (! empty($user->email)) {
+                $disposable = Http::get("https://open.kickbox.com/v1/disposable/$email");
+                if ($disposable->json()['disposable'] ?? false) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Disposable email address',
+                        'errors' => 'Disposable email addresses are not allowed.',
+                    ], Response::HTTP_FORBIDDEN);
+                }
             }
 
             // Create user
@@ -43,7 +63,7 @@ class UserController extends Controller
             $user->assignRole('Editor');
 
             // Send email
-            if (!empty($user->email)) {
+            if (! empty($user->email)) {
                 Mail::to($user->email)->queue(new CongratulationMail($user));
             }
 

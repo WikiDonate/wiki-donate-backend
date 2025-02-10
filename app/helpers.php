@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 if (! function_exists('getDetailsByUUID')) {
     /**
@@ -66,5 +67,17 @@ if (! function_exists('parseHtmlSection')) {
         }
 
         return $data;
+    }
+}
+
+if (! function_exists('verifyRecaptcha')) {
+    function verifyRecaptcha($token)
+    {
+        $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+            'secret' => env('RECAPTCHA_SECRET'),
+            'response' => $token,
+        ]);
+
+        return $response->json()['success'] ?? false;
     }
 }
